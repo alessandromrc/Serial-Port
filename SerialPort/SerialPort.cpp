@@ -37,7 +37,7 @@ namespace SerialPort {
             NULL);
 
         if (hComm == INVALID_HANDLE_VALUE)
-            printf("Error opening serial port\n");
+            printf("[ERROR] - Error opening serial port\n");
         else
             printf("Serial Port opened successfuly\n");
 
@@ -49,8 +49,21 @@ namespace SerialPort {
           0
         };
 
+        if (hComm == INVALID_HANDLE_VALUE)
+        {
+            printf("[ERROR] - Can't open Serial Port\n");
+            return 0;
+        }
+
         if (!SetCommTimeouts(hComm, &cto)) {
-            throw ("Could not set com port timeout");
+            throw ("[ERROR] - Could not set com port timeout");
+        }
+
+        bool Status = GetCommState(hComm, &dcb);
+        if (Status == FALSE)
+        {
+            printf("[ERROR] - Cannot get the Serial Port status\n");
+            return 0;
         }
 
         // Serial Port Configuration
@@ -66,7 +79,7 @@ namespace SerialPort {
         dcb.ByteSize = 8;
 
         if (!SetCommState(hComm, &dcb)) {
-            throw ("ERROR: Could not set com port parameters");
+            throw ("[ERROR] - Could not set com port parameters");
         }
         return !(hComm == INVALID_HANDLE_VALUE);
     }
